@@ -1,0 +1,36 @@
+import json
+import pandas as pd
+
+# Update this path if your JSON file is in a different location
+json_file_path = r"C:\Users\Ait\Desktop\ZAP-Report.json"
+
+# Load the JSON report
+with open(json_file_path, 'r', encoding='utf-8') as f:
+    data = json.load(f)
+
+# Prepare a list to store each alert's data as a row
+rows = []
+
+# Iterate over each site in the JSON report
+for site in data.get('site', []):
+    site_name = site.get('@name')
+    # Iterate over each alert in the site
+    for alert in site.get('alerts', []):
+        row = {
+            'site': site_name,                     # Affected URL or site name
+            'alert': alert.get('alert'),           # Vulnerability type (to be renamed later)
+            'riskcode': alert.get('riskcode'),     # Severity proxy (riskcode)
+            'confidence': alert.get('confidence'),
+            'riskdesc': alert.get('riskdesc'),
+            'count': alert.get('count'),
+            'vulnerability_detected': 1            # Mark as vulnerability (1)
+        }
+        rows.append(row)
+
+# Create a DataFrame and save it to CSV
+df = pd.DataFrame(rows)
+# Save CSV to Desktop (update the path if desired)
+csv_file_path = r"C:\Users\Ait\Desktop\ZAP-Report.csv"
+df.to_csv(csv_file_path, index=False)
+
+print("CSV file created:", csv_file_path)
